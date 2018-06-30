@@ -2,6 +2,7 @@ package io.loli.siping.plugin;
 
 import io.loli.siping.entity.Comment;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class SpamCommentFilter implements CommentFilter {
@@ -21,6 +23,7 @@ public class SpamCommentFilter implements CommentFilter {
     public void reload() {
         try {
             keyword = FileUtils.readLines(new File("/tmp/spam.txt"), Charset.forName("UTF-8"));
+            keyword = keyword.stream().filter(StringUtils::isNotBlank).collect(Collectors.toList());
         } catch (IOException ignored) {
             // ignored
         }
