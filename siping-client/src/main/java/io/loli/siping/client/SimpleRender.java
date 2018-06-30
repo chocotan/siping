@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 public class SimpleRender implements ClientRender {
 
@@ -49,4 +50,6 @@ public class SimpleRender implements ClientRender {
         IContext context = new Context(Locale.getDefault(), contextV);
         return templateEngine.process("simple", context);
     }
+
+
 }

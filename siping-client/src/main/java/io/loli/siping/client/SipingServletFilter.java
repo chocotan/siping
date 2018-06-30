@@ -1,6 +1,7 @@
 package io.loli.siping.client;
 
 
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +16,12 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Random;
 
 public class SipingServletFilter implements Filter {
     private SipingClient sipingClient;
@@ -39,6 +44,9 @@ public class SipingServletFilter implements Filter {
             String username = request.getParameter("siping_username");
             String email = request.getParameter("siping_email");
             String content = request.getParameter("siping_content");
+            if(!validateAnswer(request)){
+                logger.error("Invalid answer");
+            }
             String url = properties.getSiteUrl() + request.getRequestURI();
             try {
                 ResponseDto<Object> resp = sipingClient.addComment(url, username, email, content);
@@ -67,13 +75,17 @@ public class SipingServletFilter implements Filter {
                         for (Cookie cookie : request.getCookies()) {
                             if (cookie.getName().equals("siping_username")) {
                                 context.put("username", cookie.getValue());
-
                             }
                             if (cookie.getName().equals("siping_email")) {
                                 context.put("email", cookie.getValue());
                             }
                         }
                     }
+
+
+                    String[] questions = generateQuestion(request);
+                    String question = questions[0];
+                    context.put("question", question);
                     String commentsHtml = sipingClient.getCommentsHtml(url, context);
                     request.setAttribute("sipingComments", commentsHtml);
                 } catch (Exception e) {
@@ -84,6 +96,46 @@ public class SipingServletFilter implements Filter {
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
+    private static boolean validateAnswer(HttpServletRequest request) {
+        String answer = request.getParameter("siping_answer");
+        Queue<String> answers = (Queue<String>) request.getSession().getAttribute("answer");
+        if (answers == null) {
+            return false;
+        }
+        return answers.contains(answer);
+    }
+
+    private static String[] generateQuestion(HttpServletRequest request) {
+        String[] op = new String[]{"+", "-", "*"};
+        Integer aa = new Random().nextInt(10);
+        Integer bb = new Random().nextInt(10);
+        String oo = op[new Random().nextInt(3)];
+        String question = "";
+        String answer = "";
+        switch (oo) {
+            case "+":
+                question = aa + "+" + bb;
+                answer = "" + aa + bb;
+                break;
+            case "-":
+                question = aa + "-" + bb;
+                answer = "" + (aa - bb);
+                break;
+            case "*":
+                question = aa + "*" + bb;
+                answer = "" + aa * bb;
+                break;
+        }
+        question += "=";
+        Queue<String> answers = (Queue<String>) request.getSession().getAttribute("answer");
+        if (answers == null) {
+            answers = new CircularFifoQueue<>(10);
+        }
+        answers.offer(answer);
+        request.getSession().setAttribute("answer", answers);
+        return new String[]{question, answer};
+
+    }
 
     @Override
     public void destroy() {

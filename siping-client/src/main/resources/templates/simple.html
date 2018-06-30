@@ -85,9 +85,19 @@
             height: 25px;
             border: 1px solid #c8cccf;
         }
+        .siping-new-username{
+            width:9em;
+        }
+        .siping-new-email{
+            width:12em;
+        }
 
-        .siping-new-email,.siping-new-username{
+        .siping-new-email,.siping-new-username,.siping-new-validate{
             font-size: 0.8em;
+        }
+
+        .siping-new-answer{
+            width:4em;
         }
     </style>
     <script>
@@ -134,11 +144,14 @@
             </div>
             <div class="siping-new-form-info">
                 <label th:for="siping-new-username">用户名: </label><input name="siping_username" required id="siping-new-username"
-                                                                        th:value="${username}"
+                                                                        th:value="${username}" type="text"
                                                                         th:class="siping-new-username"/>&nbsp;&nbsp;
                 <label th:for="siping-new-email">邮箱: </label><input name="siping_email" required id="siping-new-email"
-                                                                    th:value="${email}"
+                                                                    th:value="${email}" type="text"
                                                                     th:class="siping-new-email"/>
+                <label th:for="siping-new-validate" th:text="${question}"></label><input name="siping_answer" required id="siping-new-answer"
+                                                                     type="text"
+                                                                    th:class="siping-new-answer"/>
                 <button type="submit">提交</button>
             </div>
         </form>
