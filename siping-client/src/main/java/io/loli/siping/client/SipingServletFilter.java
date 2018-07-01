@@ -1,7 +1,6 @@
 package io.loli.siping.client;
 
 
-import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,12 +15,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Random;
+import java.util.UUID;
 
 public class SipingServletFilter implements Filter {
     private SipingClient sipingClient;
@@ -44,20 +41,26 @@ public class SipingServletFilter implements Filter {
             String username = request.getParameter("siping_username");
             String email = request.getParameter("siping_email");
             String content = request.getParameter("siping_content");
-            if(!validateAnswer(request)){
+            HttpServletResponse response = (HttpServletResponse) servletResponse;
+            if (!validateAnswer(request)) {
                 logger.error("Invalid answer");
+                response.sendRedirect(request.getRequestURI());
+                return;
             }
             String url = properties.getSiteUrl() + request.getRequestURI();
             try {
                 ResponseDto<Object> resp = sipingClient.addComment(url, username, email, content);
                 if (!resp.getStatus()) {
                     logger.error("Comment add error :{}", resp.getMsg());
+                    response.sendRedirect(request.getRequestURI());
+                    return;
                 }
             } catch (Exception e) {
                 logger.error("Comment add error :{}", ExceptionUtils.getStackTrace(e));
+                response.sendRedirect(request.getRequestURI());
+                return;
             }
             // save username and email into cookie
-            HttpServletResponse response = (HttpServletResponse) servletResponse;
             Cookie usernameCookie = new Cookie("siping_username", username);
             usernameCookie.setMaxAge(2592000);
             response.addCookie(usernameCookie);
@@ -81,10 +84,8 @@ public class SipingServletFilter implements Filter {
                             }
                         }
                     }
-
-
                     String[] questions = generateQuestion(request);
-                    String question = questions[0];
+                    String question = questions[1];
                     context.put("question", question);
                     String commentsHtml = sipingClient.getCommentsHtml(url, context);
                     request.setAttribute("sipingComments", commentsHtml);
@@ -98,11 +99,12 @@ public class SipingServletFilter implements Filter {
 
     private static boolean validateAnswer(HttpServletRequest request) {
         String answer = request.getParameter("siping_answer");
-        Queue<String> answers = (Queue<String>) request.getSession().getAttribute("answer");
-        if (answers == null) {
-            return false;
+        String answerInSession = (String) request.getSession().getAttribute("answer");
+        if (answerInSession != null && answerInSession.equals(answer)) {
+            request.getSession().removeAttribute("answer");
+            return true;
         }
-        return answers.contains(answer);
+        return false;
     }
 
     private static String[] generateQuestion(HttpServletRequest request) {
@@ -127,13 +129,9 @@ public class SipingServletFilter implements Filter {
                 break;
         }
         question += "=";
-        Queue<String> answers = (Queue<String>) request.getSession().getAttribute("answer");
-        if (answers == null) {
-            answers = new CircularFifoQueue<>(10);
-        }
-        answers.offer(answer);
-        request.getSession().setAttribute("answer", answers);
-        return new String[]{question, answer};
+        request.getSession().setAttribute("answer", answer);
+        String token = UUID.randomUUID().toString();
+        return new String[]{token, question, answer};
 
     }
 
