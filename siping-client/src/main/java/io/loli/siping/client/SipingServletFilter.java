@@ -117,7 +117,7 @@ public class SipingServletFilter implements Filter {
         switch (oo) {
             case "+":
                 question = aa + "+" + bb;
-                answer = "" + aa + bb;
+                answer = "" + (aa + bb);
                 break;
             case "-":
                 question = aa + "-" + bb;
