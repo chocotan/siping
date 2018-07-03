@@ -15,7 +15,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
@@ -24,6 +26,7 @@ public class SipingServletFilter implements Filter {
     private SipingClient sipingClient;
     private SipingProperties properties;
     private static final Logger logger = LoggerFactory.getLogger(SipingServletFilter.class);
+    private static List<String> spiders = Arrays.asList("Google", "Baidu", "bot", "spider", "Spider", "Bot");
 
     public SipingServletFilter(SipingClient client, SipingProperties properties) {
         this.sipingClient = client;
@@ -129,7 +132,11 @@ public class SipingServletFilter implements Filter {
                 break;
         }
         question += "=";
-        request.getSession().setAttribute("answer", answer);
+        String ua = request.getHeader("User-Agent");
+        if (spiders.stream().noneMatch(ua::contains)) {
+            request.getSession().setAttribute("answer", answer);
+        }
+
         String token = UUID.randomUUID().toString();
         return new String[]{token, question, answer};
 
