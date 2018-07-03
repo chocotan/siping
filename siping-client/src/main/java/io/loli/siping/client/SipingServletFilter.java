@@ -26,7 +26,7 @@ public class SipingServletFilter implements Filter {
     private SipingClient sipingClient;
     private SipingProperties properties;
     private static final Logger logger = LoggerFactory.getLogger(SipingServletFilter.class);
-    private static List<String> spiders = Arrays.asList("Google", "Baidu", "bot", "spider", "Spider", "Bot");
+    private static List<String> spiders = Arrays.asList("bot", "spider", "Spider", "Bot");
 
     public SipingServletFilter(SipingClient client, SipingProperties properties) {
         this.sipingClient = client;
