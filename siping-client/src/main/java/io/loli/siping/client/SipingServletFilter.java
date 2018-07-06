@@ -26,7 +26,7 @@ public class SipingServletFilter implements Filter {
     private SipingClient sipingClient;
     private SipingProperties properties;
     private static final Logger logger = LoggerFactory.getLogger(SipingServletFilter.class);
-    private static List<String> spiders = Arrays.asList("bot", "spider", "Spider", "Bot");
+    private static List<String> spiders = Arrays.asList("bot", "spider", "Spider", "Bot", "curl");
 
     public SipingServletFilter(SipingClient client, SipingProperties properties) {
         this.sipingClient = client;
@@ -133,7 +133,7 @@ public class SipingServletFilter implements Filter {
         }
         question += "=";
         String ua = request.getHeader("User-Agent");
-        if (spiders.stream().noneMatch(ua::contains)) {
+        if (ua!=null && spiders.stream().noneMatch(ua::contains)) {
             request.getSession().setAttribute("answer", answer);
         }
 

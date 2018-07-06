@@ -32,6 +32,8 @@ public class SipingConfiguration {
         switch (sipingProperties.getRenderType()) {
             case "SIMPLE":
                 return new SimpleRender();
+            case "BOOTSTRAP4":
+                return new Bootstrap4Render();
         }
         return new SimpleRender();
     }

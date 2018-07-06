@@ -48,7 +48,12 @@ public class SimpleRender implements ClientRender {
 
         contextV.put("config", properties);
         IContext context = new Context(Locale.getDefault(), contextV);
-        return templateEngine.process("simple", context);
+        return templateEngine.process(getFileName(), context);
+    }
+
+    @Override
+    public String getFileName() {
+        return "simple";
     }
 
 

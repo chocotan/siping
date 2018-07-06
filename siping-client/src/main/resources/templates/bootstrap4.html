@@ -1,0 +1,177 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<div class="siping-comments">
+    <style scoped>
+        .siping-cell {
+            padding: 10px;
+            font-size: 14px;
+            line-height: 120%;
+            text-align: left;
+            border-bottom: 1px solid #e2e2e2;
+        }
+
+        .siping-reply-btn {
+            float: right;
+            text-align: right;
+        }
+
+        .siping-comment-username {
+            color: #778087;
+            text-decoration: none;
+        }
+
+        .siping-reply-btn > a {
+            color: #778087;
+            text-decoration: none;
+        }
+
+        .siping-reply-btn > a:hover {
+            color: #385f8a;
+        }
+
+        .siping-comment-username:hover {
+            color: #385f8a;
+        }
+
+        .siping-comment-ago {
+            font-size: 11px;
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        .siping-comment-content {
+            padding: 5px 5px 5px 0;
+        }
+
+        .siping-comments-header {
+            padding: 10px;
+            font-size: 14px;
+            line-height: 120%;
+            text-align: left;
+            border-bottom: 1px solid #e2e2e2
+        }
+
+        .siping-new-form-div {
+            margin-top: 10px;
+            margin-left: 65px;
+        }
+
+        .siping-new-form {
+        }
+
+        .siping-new-form-div input {
+            margin-left: 8px;
+            font-size: 0.8em;
+            border-radius: 1px;
+            border: 1px solid #c8cccf;
+            color: #6a6f77;
+            outline: 0;
+        }
+
+        .siping-new-form-content textarea {
+            overflow: auto;
+            resize: both;
+        }
+
+        .siping-new-form-info {
+            margin-top: 5px;
+        }
+
+        .siping-new-form-info button {
+            padding: 0 10px 0 10px;
+            background: white;
+            margin-left: 8px;
+            font-size: 0.8em;
+            height: 25px;
+            border: 1px solid #c8cccf;
+        }
+
+        .siping-new-username {
+            width: 9em;
+        }
+
+        .siping-new-email {
+            width: 12em;
+        }
+
+        .siping-new-email, .siping-new-username, .siping-new-validate {
+            font-size: 0.8em;
+        }
+
+        .siping-new-answer {
+            width: 4em;
+        }
+    </style>
+    <script>
+        function reply(username) {
+            document.getElementById("siping-new-form-content").value = "回复 " + username + "：";
+        }
+    </script>
+    <div class="card mt-3">
+        <div class="card-header topic-info-div" th:text="${commentSize}+'条评论'">
+        </div>
+
+        <div class="siping-comment siping-cell" th:each="item:${comments}">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tbody>
+                <tr>
+                    <td width="48" valign="top" align="center" class="siping-comment-head-img">
+                        <img th:src="${item.headerImgUrl}"/>
+                    </td>
+                    <td width="10" valign="top"></td>
+                    <td width="auto" valign="top" align="left" class="siping-comment-right">
+                        <div class="siping-reply-btn" style="">
+                            <a href="#siping-new-form-div" th:onclick="|reply('${item.username}')|"
+                               th:text="'点击回复'"></a>
+                        </div>
+                        <div style="height: 3px;"></div>
+                        <a class="siping-comment-username" href="javascript:void(0)" th:text="${item.username}"></a>&nbsp;
+                        &nbsp;<span
+                            class="siping-comment-ago"
+                            th:text="${#dates.format(item.createDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                        <div class="siping-comment-content" th:text="${item.content}">
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="siping-new-form-div" id="siping-new-form-div">
+            <div class="siping-new-form-header">
+                添加一条新回复
+            </div>
+            <form class="siping-new-form form-inline" method="post">
+                <textarea class="form-control  mb-3 mt-2 mr-5" style="width:100%" id="siping-new-form-content" name="siping_content" rows="3"
+                ></textarea>
+                    <label th:for="siping-new-username">用户名: </label><input name="siping_username" required
+                                                                            id="siping-new-username"
+                                                                            th:value="${username}" type="text"
+                                                                            class="form-control form-control-sm mb-1 mr-2"/>
+                    <label th:for="siping-new-email">邮箱: </label><input name="siping_email" required
+                                                                        id="siping-new-email"
+                                                                        th:value="${email}" type="text"
+                                                                        class="form-control form-control-sm mb-1 mr-2"/>
+                    <label th:for="siping-new-answer" th:text="${question}"></label><input name="siping_answer"
+                                                                                           required
+                                                                                           id="siping-new-answer"
+                                                                                           type="text"
+                                                                                           class="form-control form-control-sm mb-1 col-1"/>
+                    <button type="submit" class="btn btn-primary btn-sm mb-1">提交</button>
+                    <!--<div class="siping-new-form-content">-->
+
+                <!--</div>-->
+                <!--<div class="siping-new-form-info">-->
+                <!--<label th:for="siping-new-username">用户名: </label><input name="siping_username" required-->
+                <!--id="siping-new-username"-->
+                <!--th:value="${username}" type="text"-->
+                <!--th:class="siping-new-username"/>&nbsp;&nbsp;-->
+                <!--<label th:for="siping-new-email">邮箱: </label><input name="siping_email" required-->
+                <!--id="siping-new-email"-->
+                <!--th:value="${email}" type="text"-->
+                <!--th:class="siping-new-email"/>-->
+
+                <!--</div>-->
+            </form>
+        </div>
+    </div>
+</div>
