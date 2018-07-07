@@ -73,34 +73,9 @@
             resize: both;
         }
 
-        .siping-new-form-info {
-            margin-top: 5px;
-        }
 
-        .siping-new-form-info button {
-            padding: 0 10px 0 10px;
-            background: white;
-            margin-left: 8px;
-            font-size: 0.8em;
-            height: 25px;
-            border: 1px solid #c8cccf;
-        }
 
-        .siping-new-username {
-            width: 9em;
-        }
 
-        .siping-new-email {
-            width: 12em;
-        }
-
-        .siping-new-email, .siping-new-username, .siping-new-validate {
-            font-size: 0.8em;
-        }
-
-        .siping-new-answer {
-            width: 4em;
-        }
     </style>
     <script>
         function reply(username) {
@@ -110,7 +85,6 @@
     <div class="card mt-3">
         <div class="card-header topic-info-div" th:text="${commentSize}+'条评论'">
         </div>
-
         <div class="siping-comment siping-cell" th:each="item:${comments}">
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
                 <tbody>
@@ -157,20 +131,7 @@
                                                                                            type="text"
                                                                                            class="form-control form-control-sm mb-1 col-1"/>
                     <button type="submit" class="btn btn-primary btn-sm mb-1">提交</button>
-                    <!--<div class="siping-new-form-content">-->
 
-                <!--</div>-->
-                <!--<div class="siping-new-form-info">-->
-                <!--<label th:for="siping-new-username">用户名: </label><input name="siping_username" required-->
-                <!--id="siping-new-username"-->
-                <!--th:value="${username}" type="text"-->
-                <!--th:class="siping-new-username"/>&nbsp;&nbsp;-->
-                <!--<label th:for="siping-new-email">邮箱: </label><input name="siping_email" required-->
-                <!--id="siping-new-email"-->
-                <!--th:value="${email}" type="text"-->
-                <!--th:class="siping-new-email"/>-->
-
-                <!--</div>-->
             </form>
         </div>
     </div>
